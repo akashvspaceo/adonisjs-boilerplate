@@ -9,6 +9,13 @@ import {
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class AuthController {
+  /**
+   * @login
+   * @requestBody {"email": "", "password": ""}
+   * @responseBody 200 - {"message": "string", "user": "<User>", "access_token": "string"} - Successful login
+   * @responseBody 400 - {"message": "string"} - Invalid credentials
+   * @responseBody 422 - {"message": "string"} - Validation error
+   */
   async login({ request, response }: HttpContext) {
     const payload = await request.validateUsing(loginValidator)
     const user = await User.verifyCredentials(payload.email, payload.password)
@@ -21,6 +28,13 @@ export default class AuthController {
     })
   }
 
+  /**
+   * @register
+   * @requestBody {"name": "", "email": "", "password": ""}
+   * @responseBody 201 - {"message": "string", "access_token": "string"} - Successful registration
+   * @responseBody 400 - {"message": "string"} - Existing user
+   * @responseBody 422 - {"message": "string"} - Validation error
+   */
   async register({ request, response }: HttpContext) {
     const payload = await request.validateUsing(registerValidator)
 
@@ -34,12 +48,18 @@ export default class AuthController {
     const user = await User.create(payload)
     const token = await user.generateAccessToken()
 
-    return response.send({
+    return response.created({
       message: 'User registered successfully',
       access_token: token.value!.release(),
     })
   }
 
+  /**
+   * @logout
+   * @responseBody 200 - {"message": "string"} - Successful logout
+   * @responseBody 401 - {"message": "string"} - Unauthorized
+   * @responseBody 403 - {"message": "string"} - Unauthorized
+   */
   async logout({ response, auth }: HttpContext) {
     const user = auth.user
     user?.removeAccessToken(user.currentAccessToken.identifier as string)
@@ -48,6 +68,13 @@ export default class AuthController {
     })
   }
 
+  /**
+   * @forgotPassword
+   * @requestBody {"email": ""}
+   * @responseBody 200 - {"message": "string", "password_reset_token": "string"} - Successful reset token generated
+   * @responseBody 404 - {"message": "string"} - User not found
+   * @responseBody 422 - {"message": "string"} - Validation error
+   */
   async forgotPassword({ request, response }: HttpContext) {
     const payload = await request.validateUsing(forgotPasswordValidator)
     const user = await User.findBy('email', payload.email)
@@ -63,6 +90,13 @@ export default class AuthController {
     })
   }
 
+  /**
+   * @resetPassword
+   * @requestBody {"token": "", "password": ""}
+   * @responseBody 200 - {"message": "string"} - Successful reset password
+   * @responseBody 400 - {"message": "string"} - Invalid password reset token
+   * @responseBody 422 - {"message": "string"} - Validation error
+   */
   async resetPassword({ request, response }: HttpContext) {
     const payload = await request.validateUsing(resetPasswordValidator)
     const passwordReset = await PasswordReset.findBy('token', payload.token)

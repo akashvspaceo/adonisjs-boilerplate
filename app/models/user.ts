@@ -26,16 +26,17 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column({ serializeAs: null })
   declare password: string
 
-  @column.dateTime({ autoCreate: true })
+  @column.dateTime({ autoCreate: true, serializeAs: null })
   declare createdAt: DateTime
 
-  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
   declare updatedAt: DateTime | null
 
   static accessTokens = DbAccessTokensProvider.forModel(User)
 
   @hasMany(() => PasswordReset, {
     foreignKey: 'tokenableId',
+    serializeAs: null,
   })
   declare passwordResets: HasMany<typeof PasswordReset>
 
@@ -55,13 +56,5 @@ export default class User extends compose(BaseModel, AuthFinder) {
       token,
     })
     return passwordReset
-  }
-
-  serialize() {
-    return {
-      id: this.id,
-      name: this.name,
-      email: this.email,
-    }
   }
 }
