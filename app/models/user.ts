@@ -1,9 +1,12 @@
-import { DateTime } from 'luxon'
-import hash from '@adonisjs/core/services/hash'
-import { compose } from '@adonisjs/core/helpers'
-import { BaseModel, column } from '@adonisjs/lucid/orm'
-import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
+import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
+import { compose } from '@adonisjs/core/helpers'
+import stringHelpers from '@adonisjs/core/helpers/string'
+import hash from '@adonisjs/core/services/hash'
+import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
+import type { HasMany } from '@adonisjs/lucid/types/relations'
+import { DateTime } from 'luxon'
+import PasswordReset from './password_reset.js'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -15,7 +18,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare id: number
 
   @column()
-  declare fullName: string | null
+  declare name: string | null
 
   @column()
   declare email: string
@@ -30,4 +33,35 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare updatedAt: DateTime | null
 
   static accessTokens = DbAccessTokensProvider.forModel(User)
+
+  @hasMany(() => PasswordReset, {
+    foreignKey: 'tokenableId',
+  })
+  declare passwordResets: HasMany<typeof PasswordReset>
+
+  generateAccessToken() {
+    return User.accessTokens.create(this, ['*'], {
+      expiresIn: '30d',
+    })
+  }
+
+  removeAccessToken(id: string) {
+    return User.accessTokens.delete(this, id)
+  }
+
+  async generatePasswordResetToken() {
+    const token = stringHelpers.random(32)
+    const passwordReset = await (this as User).related('passwordResets').create({
+      token,
+    })
+    return passwordReset
+  }
+
+  serialize() {
+    return {
+      id: this.id,
+      name: this.name,
+      email: this.email,
+    }
+  }
 }
