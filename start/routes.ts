@@ -6,12 +6,13 @@
 | The routes file is used for defining the HTTP routes.
 |
 */
-import AutoSwagger from 'adonis-autoswagger'
 import swagger from '#config/swagger'
 import router from '@adonisjs/core/services/router'
+import AutoSwagger from 'adonis-autoswagger'
 import { middleware } from './kernel.js'
 
 const AuthController = () => import('#controllers/auth_controller')
+const UsersController = () => import('#controllers/users_controller')
 
 router
   .group(() => {
@@ -24,6 +25,12 @@ router
         router.post('/reset-password', [AuthController, 'resetPassword'])
       })
       .prefix('/auth')
+
+    router
+      .group(() => {
+        router.get('/users', [UsersController, 'index']).middleware(middleware.admin())
+      })
+      .middleware(middleware.auth())
   })
   .prefix('/api')
 

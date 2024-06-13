@@ -1,3 +1,4 @@
+import { UserRole } from '#config/constant'
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { compose } from '@adonisjs/core/helpers'
@@ -74,5 +75,10 @@ export default class User extends compose(BaseModel, AuthFinder) {
       token,
     })
     return passwordReset
+  }
+
+  async isAdmin() {
+    await (this as User).load('role')
+    return this.role.name === UserRole.Admin
   }
 }

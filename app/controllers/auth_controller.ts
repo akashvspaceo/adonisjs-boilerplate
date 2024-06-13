@@ -14,7 +14,7 @@ export default class AuthController {
   /**
    * @login
    * @requestBody {"email": "", "password": ""}
-   * @responseBody 200 - {"message": "string", "user": "<User>", "access_token": "string"} - Successful login
+   * @responseBody 200 - {"message": "string", "data": { "user": "<User>", "access_token": "string" }} - Successful login
    * @responseBody 400 - {"message": "string"} - Invalid credentials
    * @responseBody 422 - {"message": "string"} - Validation error
    * @responseBody 500 - {"message": "string"} - Internal server error
@@ -26,15 +26,17 @@ export default class AuthController {
 
     return response.send({
       message: 'User logged in successfully',
-      user,
-      access_token: token.value!.release(),
+      data: {
+        user,
+        access_token: token.value!.release(),
+      },
     })
   }
 
   /**
    * @register
    * @requestBody {"name": "", "email": "", "password": ""}
-   * @responseBody 201 - {"message": "string", "access_token": "string"} - Successful registration
+   * @responseBody 201 - {"message": "string", "data": { "access_token": "string" }} - Successful registration
    * @responseBody 400 - {"message": "string"} - Existing user
    * @responseBody 422 - {"message": "string"} - Validation error
    * @responseBody 500 - {"message": "string"} - Internal server error
@@ -61,7 +63,9 @@ export default class AuthController {
 
     return response.created({
       message: 'User registered successfully',
-      access_token: token.value!.release(),
+      data: {
+        access_token: token.value!.release(),
+      },
     })
   }
 
@@ -83,7 +87,7 @@ export default class AuthController {
   /**
    * @forgotPassword
    * @requestBody {"email": ""}
-   * @responseBody 200 - {"message": "string", "password_reset_token": "string"} - Successful reset token generated
+   * @responseBody 200 - {"message": "string", "data": { "password_reset_token": "string" }} - Successful reset token generated
    * @responseBody 404 - {"message": "string"} - User not found
    * @responseBody 422 - {"message": "string"} - Validation error
    * @responseBody 500 - {"message": "string"} - Internal server error
@@ -99,7 +103,9 @@ export default class AuthController {
     const passwordReset = await user.generatePasswordResetToken()
     return response.send({
       message: 'Password reset token generated successfully',
-      password_reset_token: passwordReset.token,
+      data: {
+        password_reset_token: passwordReset.token,
+      },
     })
   }
 
