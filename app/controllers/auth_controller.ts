@@ -1,4 +1,6 @@
+import { UserRole } from '#config/constant'
 import PasswordReset from '#models/password_reset'
+import Role from '#models/role'
 import User from '#models/user'
 import {
   forgotPasswordValidator,
@@ -15,6 +17,7 @@ export default class AuthController {
    * @responseBody 200 - {"message": "string", "user": "<User>", "access_token": "string"} - Successful login
    * @responseBody 400 - {"message": "string"} - Invalid credentials
    * @responseBody 422 - {"message": "string"} - Validation error
+   * @responseBody 500 - {"message": "string"} - Internal server error
    */
   async login({ request, response }: HttpContext) {
     const payload = await request.validateUsing(loginValidator)
@@ -34,6 +37,7 @@ export default class AuthController {
    * @responseBody 201 - {"message": "string", "access_token": "string"} - Successful registration
    * @responseBody 400 - {"message": "string"} - Existing user
    * @responseBody 422 - {"message": "string"} - Validation error
+   * @responseBody 500 - {"message": "string"} - Internal server error
    */
   async register({ request, response }: HttpContext) {
     const payload = await request.validateUsing(registerValidator)
@@ -45,7 +49,14 @@ export default class AuthController {
       })
     }
 
-    const user = await User.create(payload)
+    const userRole = (await Role.findBy('name', UserRole.User))!
+    const user = new User()
+    user.name = payload.name
+    user.email = payload.email
+    user.password = payload.password
+    user.roleId = userRole.id
+    await user.save()
+
     const token = await user.generateAccessToken()
 
     return response.created({
@@ -59,6 +70,7 @@ export default class AuthController {
    * @responseBody 200 - {"message": "string"} - Successful logout
    * @responseBody 401 - {"message": "string"} - Unauthorized
    * @responseBody 403 - {"message": "string"} - Unauthorized
+   * @responseBody 500 - {"message": "string"} - Internal server error
    */
   async logout({ response, auth }: HttpContext) {
     const user = auth.user
@@ -74,6 +86,7 @@ export default class AuthController {
    * @responseBody 200 - {"message": "string", "password_reset_token": "string"} - Successful reset token generated
    * @responseBody 404 - {"message": "string"} - User not found
    * @responseBody 422 - {"message": "string"} - Validation error
+   * @responseBody 500 - {"message": "string"} - Internal server error
    */
   async forgotPassword({ request, response }: HttpContext) {
     const payload = await request.validateUsing(forgotPasswordValidator)
@@ -96,6 +109,7 @@ export default class AuthController {
    * @responseBody 200 - {"message": "string"} - Successful reset password
    * @responseBody 400 - {"message": "string"} - Invalid password reset token
    * @responseBody 422 - {"message": "string"} - Validation error
+   * @responseBody 500 - {"message": "string"} - Internal server error
    */
   async resetPassword({ request, response }: HttpContext) {
     const payload = await request.validateUsing(resetPasswordValidator)
