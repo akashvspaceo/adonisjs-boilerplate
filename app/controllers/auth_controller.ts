@@ -22,10 +22,46 @@ export default class AuthController {
   async login({ request, response }: HttpContext) {
     const payload = await request.validateUsing(loginValidator)
     const user = await User.verifyCredentials(payload.email, payload.password)
+    await user.load('role')
+    if (user.role.name !== UserRole.User) {
+      return response.badRequest({
+        message: 'Invalid credentials',
+      })
+    }
     const token = await user.generateAccessToken()
 
     return response.send({
       message: 'User logged in successfully',
+      data: {
+        user,
+        access_token: token.value!.release(),
+      },
+    })
+  }
+
+  /**
+   * @adminLogin
+   * @summary Admin login
+   * @description Admin login
+   * @requestBody {"email": "", "password": ""}
+   * @responseBody 200 - {"message": "string", "data": { "user": "<User>", "access_token": "string" }} - Successful admin login
+   * @responseBody 400 - {"message": "string"} - Invalid credentials
+   * @responseBody 422 - {"message": "string"} - Validation error
+   * @responseBody 500 - {"message": "string"} - Internal server error
+   */
+  async adminLogin({ request, response }: HttpContext) {
+    const payload = await request.validateUsing(loginValidator)
+    const user = await User.verifyCredentials(payload.email, payload.password)
+    await user.load('role')
+    if (user.role.name !== UserRole.Admin) {
+      return response.badRequest({
+        message: 'Invalid credentials',
+      })
+    }
+    const token = await user.generateAccessToken()
+
+    return response.send({
+      message: 'Admin logged in successfully',
       data: {
         user,
         access_token: token.value!.release(),

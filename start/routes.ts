@@ -18,6 +18,7 @@ router
   .group(() => {
     router
       .group(() => {
+        router.post('/admin/login', [AuthController, 'adminLogin'])
         router.post('/login', [AuthController, 'login'])
         router.post('/register', [AuthController, 'register'])
         router.post('/logout', [AuthController, 'logout']).use(middleware.auth())

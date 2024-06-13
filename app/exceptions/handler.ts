@@ -22,7 +22,7 @@ export default class HttpExceptionHandler extends ExceptionHandler {
     }
     if (error instanceof authErrors.E_INVALID_CREDENTIALS) {
       return ctx.response.status(error.status).send({
-        message: error.message,
+        message: 'Invalid credentials',
       })
     }
     if (error instanceof authErrors.E_UNAUTHORIZED_ACCESS) {
