@@ -60,7 +60,10 @@
     "@vinejs/vine": "^2.1.0",
     "adonis-autoswagger": "^3.43.0",
     "luxon": "^3.4.4",
+    "moment": "^2.30.1",
     "mysql2": "^3.10.0",
+    "pino": "^9.2.0",
+    "pino-roll": "^1.1.0",
     "reflect-metadata": "^0.2.2"
   },
   "hotHook": {

@@ -1,6 +1,8 @@
 import env from '#start/env'
-import app from '@adonisjs/core/services/app'
 import { defineConfig, targets } from '@adonisjs/core/logger'
+import app from '@adonisjs/core/services/app'
+import fs from 'node:fs'
+import pino from 'pino'
 
 const loggerConfig = defineConfig({
   default: 'app',
@@ -32,4 +34,19 @@ export default loggerConfig
  */
 declare module '@adonisjs/core/types' {
   export interface LoggersList extends InferLoggers<typeof loggerConfig> {}
+}
+
+/**
+ * Customize pino logger
+ */
+export const pinoLogger = (): pino.Logger => {
+  const logFilepath = 'logs/app.log'
+  if (!fs.existsSync(logFilepath)) {
+    fs.writeFileSync(logFilepath, '')
+  }
+  const stream = pino.destination({
+    dest: logFilepath,
+  })
+  // @ts-ignore
+  return pino(stream)
 }

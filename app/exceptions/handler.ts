@@ -1,3 +1,4 @@
+import { pinoLogger } from '#config/logger'
 import { errors as authErrors } from '@adonisjs/auth'
 import { ExceptionHandler, HttpContext, errors as httpErrors } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
@@ -36,6 +37,7 @@ export default class HttpExceptionHandler extends ExceptionHandler {
         message: 'Not found',
       })
     }
+    pinoLogger().error(error)
     return super.handle(error, ctx)
   }
 
