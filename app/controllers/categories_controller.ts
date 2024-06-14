@@ -22,7 +22,7 @@ export default class CategoriesController {
     const page = request.input('page', 1)
     const limit = request.input('limit', 10)
 
-    const categoriesQuery = user.related('categories').query()
+    const categoriesQuery = user.related('categories').query().orderBy('id', 'desc')
 
     if (search) {
       categoriesQuery.where((query) => {

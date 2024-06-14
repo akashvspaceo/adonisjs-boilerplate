@@ -1,4 +1,4 @@
-import { BaseModel, beforeCreate, belongsTo, column } from '@adonisjs/lucid/orm'
+import { BaseModel, beforeCreate, belongsTo, column, computed } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
 import { randomUUID } from 'node:crypto'
@@ -12,10 +12,10 @@ export default class Product extends BaseModel {
   @column()
   declare uuid: string
 
-  @column()
+  @column({ serializeAs: null })
   declare userId: number
 
-  @column()
+  @column({ serializeAs: null })
   declare categoryId: number
 
   @column()
@@ -46,4 +46,9 @@ export default class Product extends BaseModel {
 
   @belongsTo(() => Category)
   declare category: BelongsTo<typeof Category>
+
+  @computed({ serializeAs: 'category' })
+  get categoryName(): string | null {
+    return this.category?.name || null
+  }
 }

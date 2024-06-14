@@ -11,6 +11,7 @@ import { randomUUID } from 'node:crypto'
 import Category from './category.js'
 import PasswordReset from './password_reset.js'
 import Role from './role.js'
+import Product from './product.js'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -87,4 +88,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
     serializeAs: null,
   })
   declare categories: HasMany<typeof Category>
+
+  @hasMany(() => Product, {
+    serializeAs: null,
+  })
+  declare products: HasMany<typeof Product>
 }

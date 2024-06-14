@@ -14,6 +14,7 @@ import { middleware } from './kernel.js'
 const AuthController = () => import('#controllers/auth_controller')
 const UsersController = () => import('#controllers/users_controller')
 const CategoryController = () => import('#controllers/categories_controller')
+const ProductsController = () => import('#controllers/products_controller')
 
 router
   .group(() => {
@@ -34,6 +35,9 @@ router
 
         router.resource('/categories', CategoryController).apiOnly().except(['show']).params({
           categories: 'uuid',
+        })
+        router.resource('/products', ProductsController).apiOnly().params({
+          products: 'uuid',
         })
       })
       .middleware(middleware.auth())
