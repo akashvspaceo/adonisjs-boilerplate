@@ -8,6 +8,7 @@ import { BaseModel, beforeCreate, belongsTo, column, hasMany } from '@adonisjs/l
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
 import { randomUUID } from 'node:crypto'
+import Category from './category.js'
 import PasswordReset from './password_reset.js'
 import Role from './role.js'
 
@@ -81,4 +82,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
     await (this as User).load('role')
     return this.role.name === UserRole.Admin
   }
+
+  @hasMany(() => Category, {
+    serializeAs: null,
+  })
+  declare categories: HasMany<typeof Category>
 }

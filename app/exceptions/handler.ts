@@ -1,6 +1,7 @@
 import { errors as authErrors } from '@adonisjs/auth'
-import { ExceptionHandler, HttpContext } from '@adonisjs/core/http'
+import { ExceptionHandler, HttpContext, errors as httpErrors } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
+import { errors } from '@adonisjs/lucid'
 import { errors as vineErrors } from '@vinejs/vine'
 
 export default class HttpExceptionHandler extends ExceptionHandler {
@@ -28,6 +29,11 @@ export default class HttpExceptionHandler extends ExceptionHandler {
     if (error instanceof authErrors.E_UNAUTHORIZED_ACCESS) {
       return ctx.response.status(error.status).send({
         message: 'Unauthorized',
+      })
+    }
+    if (error instanceof httpErrors.E_ROUTE_NOT_FOUND || error instanceof errors.E_ROW_NOT_FOUND) {
+      return ctx.response.status(404).send({
+        message: 'Not found',
       })
     }
     return super.handle(error, ctx)

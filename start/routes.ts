@@ -13,6 +13,7 @@ import { middleware } from './kernel.js'
 
 const AuthController = () => import('#controllers/auth_controller')
 const UsersController = () => import('#controllers/users_controller')
+const CategoryController = () => import('#controllers/categories_controller')
 
 router
   .group(() => {
@@ -30,6 +31,10 @@ router
     router
       .group(() => {
         router.get('/users', [UsersController, 'index']).middleware(middleware.admin())
+
+        router.resource('/categories', CategoryController).apiOnly().except(['show']).params({
+          categories: 'uuid',
+        })
       })
       .middleware(middleware.auth())
   })

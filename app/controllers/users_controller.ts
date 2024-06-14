@@ -8,7 +8,7 @@ export default class UsersController {
    * @index
    * @paramQuery page - Page - @type(number)
    * @paramQuery limit - Per Page - @type(number)
-   * @paramQuery search - Search users - @type(string)
+   * @paramQuery search - Search - @type(string)
    * @responseBody 200 - {"message": "string", "data": { "users":  "<User[]>.paginated()" }} - Users list
    * @responseBody 401 - {"message": "string"} - Unauthorized
    * @responseBody 403 - {"message": "string"} - Forbidden
