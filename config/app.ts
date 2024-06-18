@@ -3,6 +3,10 @@ import app from '@adonisjs/core/services/app'
 import { Secret } from '@adonisjs/core/helpers'
 import { defineConfig } from '@adonisjs/core/http'
 
+export const appName = env.get('APP_NAME')
+
+export const appUrl = env.get('APP_URL')
+
 /**
  * The app key is used for encrypting cookies, generating signed URLs,
  * and by the "encryption" module.

@@ -9,6 +9,8 @@ import {
   resetPasswordValidator,
 } from '#validators/auth'
 import type { HttpContext } from '@adonisjs/core/http'
+// import mail from '@adonisjs/mail/services/main'
+import { DateTime } from 'luxon'
 
 export default class AuthController {
   /**
@@ -136,12 +138,17 @@ export default class AuthController {
         message: 'User does not exists with this email address',
       })
     }
-    const passwordReset = await user.generatePasswordResetToken()
+    // const passwordReset = await user.generatePasswordResetToken()
+
+    // await mail.send((message) => {
+    //   message
+    //     .to(user.email)
+    //     .subject('Reset your password')
+    //     .htmlView('emails/verify_email', { user, token: passwordReset.token })
+    // })
+
     return response.send({
-      message: 'Password reset token generated successfully',
-      data: {
-        password_reset_token: passwordReset.token,
-      },
+      message: 'Password reset link sent to your email',
     })
   }
 
@@ -156,7 +163,7 @@ export default class AuthController {
   async resetPassword({ request, response }: HttpContext) {
     const payload = await request.validateUsing(resetPasswordValidator)
     const passwordReset = await PasswordReset.findBy('token', payload.token)
-    if (!passwordReset) {
+    if (!passwordReset || passwordReset.createdAt < DateTime.now().minus({ minutes: 15 })) {
       return response.badRequest({
         message: 'Invalid password reset token',
       })
