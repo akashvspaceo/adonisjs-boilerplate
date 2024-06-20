@@ -2,6 +2,7 @@ import { UserRole } from '#config/constant'
 import Role from '#models/role'
 import User from '#models/user'
 import type { HttpContext } from '@adonisjs/core/http'
+import getPaginatedJSON from '../helpers/pagination_helper.js'
 
 export default class UsersController {
   /**
@@ -28,7 +29,7 @@ export default class UsersController {
       })
     }
 
-    const users = await usersQuery.paginate(page, limit)
+    const users = getPaginatedJSON(await usersQuery.paginate(page, limit))
 
     return response.send({
       message: 'Users retrieved successfully',

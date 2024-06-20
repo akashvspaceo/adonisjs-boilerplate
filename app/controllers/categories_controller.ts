@@ -2,6 +2,7 @@ import Category from '#models/category'
 import CategoryPolicy from '#policies/category_policy'
 import { categoryValidator } from '#validators/category'
 import type { HttpContext } from '@adonisjs/core/http'
+import getPaginatedJSON from '../helpers/pagination_helper.js'
 
 export default class CategoriesController {
   /**
@@ -30,7 +31,7 @@ export default class CategoriesController {
       })
     }
 
-    const categories = await categoriesQuery.paginate(page, limit)
+    const categories = getPaginatedJSON(await categoriesQuery.paginate(page, limit))
 
     return response.send({
       message: 'Categories retrieved successfully',

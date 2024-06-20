@@ -4,6 +4,7 @@ import CategoryPolicy from '#policies/category_policy'
 import ProductPolicy from '#policies/product_policy'
 import { productValidator } from '#validators/product'
 import type { HttpContext } from '@adonisjs/core/http'
+import getPaginatedJSON from '../helpers/pagination_helper.js'
 
 export default class ProductsController {
   /**
@@ -35,7 +36,7 @@ export default class ProductsController {
       })
     }
 
-    const products = await productsQuery.paginate(page, limit)
+    const products = getPaginatedJSON(await productsQuery.paginate(page, limit))
 
     return response.send({
       message: 'Products retrieved successfully',
