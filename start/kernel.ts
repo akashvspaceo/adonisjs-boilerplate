@@ -8,6 +8,7 @@
 |
 */
 
+import '#services/socket_service'
 import router from '@adonisjs/core/services/router'
 import server from '@adonisjs/core/services/server'
 
@@ -26,6 +27,7 @@ server.use([
   () => import('#middleware/container_bindings_middleware'),
   () => import('#middleware/force_json_response_middleware'),
   () => import('@adonisjs/cors/cors_middleware'),
+  () => import('#middleware/socket_middleware'),
 ])
 
 /**

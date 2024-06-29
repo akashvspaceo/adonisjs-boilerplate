@@ -66,7 +66,8 @@
     "mysql2": "^3.10.0",
     "pino": "^9.2.0",
     "pino-roll": "^1.1.0",
-    "reflect-metadata": "^0.2.2"
+    "reflect-metadata": "^0.2.2",
+    "socket.io": "^4.7.5"
   },
   "hotHook": {
     "boundaries": [
